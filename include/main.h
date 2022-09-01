@@ -75,6 +75,12 @@ void opcontrol(void);
 /**
  * You can add C++-only headers here
  */
+#include "drivesystems/drive.hpp"
+#include "drivesystems/control.hpp"
+#include "drivesystems/flywheel.hpp"
+#include "drivesystems/sensor.hpp"
+#include <vector>
+#include <chrono>
 //#include <iostream>
 #endif
 

@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 /**
  * A callback function for LLEMU's center button.
  *
@@ -24,11 +25,25 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	pros::lcd::print(0, "Drive v0.0");
+	// pros::lcd::print(1)
 
+	inertial_sensor.reset();
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
+int update_inertial() {
+	double ry = inertial_sensor.get_rotation();
+	rotation_list.push_back(ry);
+
+	pros::c::imu_accel_s_t a = inertial_sensor.get_accel();
+	acceleration_list.push_back(a);
+
+	double micros = pros::micros();
+	timestamp_list.push_back(micros);
+
+	return 0;
+}
 /**
  * Runs while the robot is in the disabled state of Field Management System or
  * the VEX Competition Switch, following either autonomous or opcontrol. When
@@ -45,12 +60,15 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
+
+
+
 void competition_initialize() {}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the autonomous
+ * the Field	 Management System or the VEX Competition Switch in the autonomous
  * mode. Alternatively, this function may be called in initialize or opcontrol
  * for non-competition testing purposes.
  *
@@ -74,19 +92,28 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
 
-	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
+	/*
+	 * pros::controller master
+	    * master controller
+	 * pros::motor m_(top/bottom)(left/right) 
+	    * drive motors
+	 * pros::motor m_fly(1/2) 
+	 	* flywheel motors 
+	 * pros::Imu interial_sensor 
+	    * interial sensor
+	 * std::vector<pros::c::imu_gyro_s_t> rotation_list
+	    * a list of the rotations of the robot at different timestamps
+	 * std::vector<pros::c::imu_accel_s_t> acceleration_list
+	 	* a list of the accelerations of the robot at different timestamps
+	 * std::vector<double> timestamps
+	 	* a list of doubles representing the times that different rotations and accelerations were taken in ms since robot run
+		* timestamps[i] == time that acclerations[i] and rotations[i] was recorded
+	*/
 
-		left_mtr = left;
-		right_mtr = right;
-		pros::delay(20);
+	while (1) {
+		update_inertial();
+		
+		pros::delay(10);
 	}
 }
