@@ -96,6 +96,7 @@ void opcontrol(void);
 #include "drivesystems/control.hpp"
 #include "drivesystems/flywheel.hpp"
 #include "drivesystems/sensor.hpp"
+#include "drivesystems/intake.hpp"
 #include "math/vector.hpp"
 
 #include <vector>

@@ -116,9 +116,14 @@ void opcontrol() {
 
 	while (1) {
 		update_inertial();
-		double voltage = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-		fly_m1.move(voltage);
-		fly_m2.move(-1 * voltage);
+		int flywheel = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) * 127;
+		int intake = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN) * 127;
+		
+		double y = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		double x = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+
+		fly_m1.move(flywheel);
+		fly_m2.move(-flywheel);
 		pros::delay(10);
 	}
 }
