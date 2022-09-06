@@ -32,6 +32,7 @@ void initialize() {
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
+
 int update_inertial() {
 	double ry = inertial_sensor.get_rotation();
 	rotation_list.push_back(ry);
@@ -39,11 +40,13 @@ int update_inertial() {
 	pros::c::imu_accel_s_t a = inertial_sensor.get_accel();
 	acceleration_list.push_back(a);
 
-	double micros = pros::micros();
+	uint64_t micros = pros::micros();
 	timestamp_list.push_back(micros);
 
 	return 0;
 }
+
+
 /**
  * Runs while the robot is in the disabled state of Field Management System or
  * the VEX Competition Switch, following either autonomous or opcontrol. When
@@ -113,7 +116,9 @@ void opcontrol() {
 
 	while (1) {
 		update_inertial();
-		
+		double voltage = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		fly_m1.move(voltage);
+		fly_m2.move(-1 * voltage);
 		pros::delay(10);
 	}
 }

@@ -72,6 +72,23 @@ void opcontrol(void);
 #endif
 
 #ifdef __cplusplus
+
+/**
+ * Constants
+ */
+
+#ifndef PI
+#define PI 3.141592654
+#endif
+
+#ifndef RADIANS_TO_DEGREES
+#define RADIANS_TO_DEGREES 180/PI
+#endif
+
+#ifndef DEGREES_TO_RADIANS
+#define DEGREES_TO_RADIANS PI/180
+#endif
+
 /**
  * You can add C++-only headers here
  */
@@ -79,8 +96,11 @@ void opcontrol(void);
 #include "drivesystems/control.hpp"
 #include "drivesystems/flywheel.hpp"
 #include "drivesystems/sensor.hpp"
+#include "math/vector.hpp"
+
 #include <vector>
-#include <chrono>
+#include <math.h>
+
 //#include <iostream>
 #endif
 
