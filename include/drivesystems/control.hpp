@@ -1,3 +1,10 @@
 #include "main.h"
 
 extern pros::Controller master;
+
+#define FLYWHEEL_BUTTON pros::E_CONTROLLER_DIGITAL_RIGHT
+#define INTAKE_BUTTON pros::E_CONTROLLER_DIGITAL_LEFT
+#define DRIVE_FWD pros::E_CONTROLLER_ANALOG_LEFT_Y
+#define DRIVE_TRN pros::E_CONTROLLER_ANALOG_LEFT_X
+
+#define WIRELESS_RECIEVER_PORT 10

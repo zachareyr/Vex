@@ -1,4 +1,7 @@
 #include "main.h"
 
-extern pros::Motor fly_m1;
-extern pros::Motor fly_m2;
+
+extern pros::Motor m_fly;
+#define M_FLY_PORT 14
+
+// #define fly_motors std::vector<pros::Motor>

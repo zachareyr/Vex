@@ -1,12 +1,11 @@
 #include "main.h"
 
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
+std::vector<pros::Motor> drive_motors{m_topleft, m_topright, m_bottomleft, m_bottomright};
+std::vector<pros::Motor> left_drive_motors{m_topleft, m_bottomleft};
+std::vector<pros::Motor> right_drive_motors{m_topright, m_bottomright};
+FILE *inertial_data = fopen("usd/inertial.txt", "w");
+
 void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
@@ -25,26 +24,13 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::print(0, "Drive v0.0");
+	pros::lcd::print(0, "Drive v0.11");
 	// pros::lcd::print(1)
 
 	inertial_sensor.reset();
 	pros::lcd::register_btn1_cb(on_center_button);
 }
 
-
-int update_inertial() {
-	double ry = inertial_sensor.get_rotation();
-	rotation_list.push_back(ry);
-
-	pros::c::imu_accel_s_t a = inertial_sensor.get_accel();
-	acceleration_list.push_back(a);
-
-	uint64_t micros = pros::micros();
-	timestamp_list.push_back(micros);
-
-	return 0;
-}
 
 
 /**
@@ -114,16 +100,33 @@ void opcontrol() {
 		* timestamps[i] == time that acclerations[i] and rotations[i] was recorded
 	*/
 
+
 	while (1) {
 		update_inertial();
-		int flywheel = master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) * 127;
-		int intake = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN) * 127;
-		
-		double y = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		double x = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		int flywheel = master.get_digital(FLYWHEEL_BUTTON) * 127;
+		int intake = master.get_digital(INTAKE_BUTTON) * 127;
 
-		fly_m1.move(flywheel);
-		fly_m2.move(-flywheel);
+		int power = master.get_analog(DRIVE_FWD);
+		int turning = master.get_analog(DRIVE_TRN);
+
+		int left_power = power + turning;
+		int right_power = power - turning;
+
+
+		// master.print(0, 0, (char *)rev);
+		
+
+		// m_topleft = left_power;
+		// m_bottomleft = left_power;
+		// m_bottomright = right_power;
+		// m_topright = right_power;
+
+		m_fly = (master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y));
+		m_intake = (master.get_analog(pros ::E_CONTROLLER_ANALOG_RIGHT_Y));
+		// m_fly.move(flywheel);
+		// m_intake.move(intake);
+		// fly_m2.move(-flywheel);
 		pros::delay(10);
 	}
 }
+// heine

@@ -89,6 +89,9 @@ void opcontrol(void);
 #define DEGREES_TO_RADIANS PI/180
 #endif
 
+#define INCHES_TO_CM 2.54
+#define CM_TO_INCHES 1/2.54
+
 /**
  * You can add C++-only headers here
  */
@@ -98,6 +101,7 @@ void opcontrol(void);
 #include "drivesystems/sensor.hpp"
 #include "drivesystems/intake.hpp"
 #include "math/vector.hpp"
+#include "helpers/helpers.hpp"
 
 #include <vector>
 #include <math.h>
