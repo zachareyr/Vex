@@ -1,5 +1,16 @@
 #include "main.h"
 
+typedef struct p2 {
+    float x;
+    float y;
+} position2D;
+
+typedef struct p3 {
+    float x;
+    float y;
+    float z;
+} position3D;
+
 std::vector<float> get_motor_temperatures(std::vector<pros::Motor> motors) {
     std::vector<float> temps;
 

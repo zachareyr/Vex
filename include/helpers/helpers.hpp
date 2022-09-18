@@ -7,4 +7,7 @@ std::vector<float> get_motor_temperatures(std::vector<pros::Motor> motors);
 
 void power_motors(std::vector<pros::Motor> *motors, int voltage);
 void update_inertial();
-VectorEq *get_pos();
+VectorEq get_pos();
+
+typedef struct p2 position2D;
+typedef struct p3 position3D;
