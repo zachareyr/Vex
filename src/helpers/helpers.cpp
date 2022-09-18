@@ -16,32 +16,55 @@ void power_motors(std::vector<pros::Motor> *motors, int voltage) {
 }
 
 void update_inertial() {
-	double ry = inertial_sensor.get_yaw();
-	rotation_list.push_back(ry);
+	double yaw = inertial_sensor.get_yaw();
+	rotation_list.push_back(yaw);
 
 	pros::c::imu_accel_s_t a = inertial_sensor.get_accel();
 	acceleration_list.push_back(a);
 
 	uint64_t micros = pros::micros();
 	timestamp_list.push_back(micros);
-
-    int length = vx_list.size();
-    // double a_avg = (acceleration_list[length] - acceleration_list[length - 1]) / (timestamp_list[length] - timestamp_list[length - 1]);
-    // double vx = vx_list[length - 1] + (acceleration_list[length].x - acceleration_list[length - 1].x);
-    double vy = vy_list[length - 1];
-}
-
-double calculate_position() {
-    double px = STARTING_POSITION_X;
-    double py = STARTING_POSITION_Y;
-    double vx = 0;
-    double vy = 0;
-    for (uint64_t i = 0; i < timestamp_list.size(); i++) {
-        vx += acceleration_list[i].x * (timestamp_list[i] * 1000);
-        vy += acceleration_list[i].y * (timestamp_list[i] * 1000);
-    }  
     
-    // TODO finish this
-    return -1;
+    int n = acceleration_list.size() - 1;
+    
+    // If any of the lists failed to update, continue recursing n back until a valid # is found
+    for (; n > acceleration_list.size() - 1 || n > timestamp_list.size() - 1 || n > rotation_list.size() - 1; n--)
+
+    // Previous velocity is required for calculations, so don't continue without it
+    if (vx_list.size() > 0) {
+        // fucky wucky math to get velocity and position
+        double a0x = acceleration_list[n - 1].x;
+        double a0y = acceleration_list[n - 1].y;
+        double afx = acceleration_list[n].x;
+        double afy = acceleration_list[n].y;
+        double vx0 = vx_list[n - 1];
+        double vy0 = vy_list[n - 1];
+        double dt = timestamp_list[n] - timestamp_list[n - 1];
+
+        double ax_avg = (a0x + afx) / 2;
+        double ay_avg = (a0y + afy) / 2; 
+        double vxf = vx0 + (ax_avg * dt);
+        double vyf = vy0 + (ay_avg * dt);   
+
+        vx_list.push_back(vxf);
+        vy_list.push_back(vyf);
+
+        double vx_avg = (vx0 + vxf) / 2;
+        double vy_avg = (vy0 + vyf) / 2;
+        double px = px_list[n] + (vx_avg * dt);
+        double py = py_list[n] + (vy_avg * dt);
+
+        px_list.push_back(px);
+        py_list.push_back(py);
+    } else {
+        // Assume the object begins stationary at the starting coordinates defined in [include/drive.hpp]
+        vx_list.push_back(0);
+        vy_list.push_back(0);
+        px_list.push_back(STARTING_POSITION_X);
+        py_list.push_back(STARTING_POSITION_Y);
+    }
 }
-// Ms. Heine
+
+VectorEq get_pos() {
+    return VectorEq(px_list[px_list.size() - 1], py_list[py_list.size() - 1]); 
+}

@@ -103,8 +103,10 @@ void opcontrol() {
 
 	while (1) {
 		update_inertial();
-		int flywheel = master.get_digital(FLYWHEEL_BUTTON) * 127;
-		int intake = master.get_digital(INTAKE_BUTTON) * 127;
+
+		int intake = master.get_analog(INTAKE_STICK);
+
+		int flywheel = master.get_digital(FLYWHEEL_FWD_BUTTON) * 127;
 
 		int power = master.get_analog(DRIVE_FWD);
 		int turning = master.get_analog(DRIVE_TRN);
@@ -113,7 +115,8 @@ void opcontrol() {
 		int right_power = power - turning;
 
 
-		// master.print(0, 0, (char *)rev);
+		master.print(1, 0, ("Right: " + std::to_string(right_power) + 
+			"   Left: " + std::to_string(left_power)).c_str());
 		
 
 		// m_topleft = left_power;
@@ -121,12 +124,11 @@ void opcontrol() {
 		// m_bottomright = right_power;
 		// m_topright = right_power;
 
-		m_fly = (master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y));
-		m_intake = (master.get_analog(pros ::E_CONTROLLER_ANALOG_RIGHT_Y));
-		// m_fly.move(flywheel);
-		// m_intake.move(intake);
-		// fly_m2.move(-flywheel);
+		power_motors(&left_drive_motors, left_power);
+		power_motors(&right_drive_motors, right_power);
+	
+		m_fly = flywheel;
+		m_intake = intake;
 		pros::delay(10);
 	}
 }
-// heine

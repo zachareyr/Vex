@@ -12,15 +12,10 @@ extern pros::Motor m_bottomright;
 
 // TODO measure this shit
 
-// Where the robot starts on the field (left side)
-#define STARTING_POSITION_1
-
-// Where the robot starts on the field (right side)
-#define STARTING_POSITION_2 
 
 // The starting position used
-#define STARTING_POSITION_X 1
-#define STARTING_POSITION_Y 1
+#define STARTING_POSITION_X 0
+#define STARTING_POSITION_Y 0
 
 // Wheel attributes
 // MEASUREMENTS IN INCHES
