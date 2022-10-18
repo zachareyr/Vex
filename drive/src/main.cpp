@@ -1,10 +1,10 @@
 #include "main.h"
 
-
-std::vector<pros::Motor> drive_motors{m_topleft, m_topright, m_bottomleft, m_bottomright};
-std::vector<pros::Motor> left_drive_motors{m_topleft, m_bottomleft};
-std::vector<pros::Motor> right_drive_motors{m_topright, m_bottomright};
-FILE *inertial_data = fopen("usd/inertial.txt", "w");
+void power_drive();
+void power_flywheel();
+void power_intake();
+void power_push();
+void print_data();
 
 void on_center_button() {
 	static bool pressed = false;
@@ -104,31 +104,64 @@ void opcontrol() {
 	while (1) {
 		update_inertial();
 
-		int intake = master.get_analog(INTAKE_STICK);
+		power_drive();
+		power_intake();
+		power_push();
+		power_flywheel();
 
-		int flywheel = master.get_digital(FLYWHEEL_FWD_BUTTON) * 127;
-
-		int power = master.get_analog(DRIVE_FWD);
-		int turning = master.get_analog(DRIVE_TRN);
-
-		int left_power = power + turning;
-		int right_power = power - turning;
-
-
-		master.print(1, 0, ("Right: " + std::to_string(right_power) + 
-			"   Left: " + std::to_string(left_power)).c_str());
-		
-
-		// m_topleft = left_power;
-		// m_bottomleft = left_power;
-		// m_bottomright = right_power;
-		// m_topright = right_power;
-
-		power_motors(&left_drive_motors, left_power);
-		power_motors(&right_drive_motors, right_power);
-	
-		m_fly = flywheel;
-		m_intake = intake;
+		print_data();
 		pros::delay(10);
 	}
+}
+
+void print_data() {
+	// TODO
+}
+
+void power_flywheel() {
+	int power;
+	if (INTAKE_CONTROL_SCHEME == 0) { 
+		power = master.get_digital(FLYWHEEL_BUTTON) * 127;
+	} else {
+		power = master.get_analog(FLYWHEEL_STICK);
+	}
+
+	m_fly1 = power;
+	m_fly2 = power;
+}
+
+void power_push() {
+	m_push = master.get_digital(PUSH_BUTTON) * 127;
+}
+
+void power_intake() {
+	int power = 0;
+	if (INTAKE_CONTROL_SCHEME == 0) {
+		if (master.get_digital(INTAKE_FWD_BUTTON)) {
+			power = 127;
+		} else if (master.get_digital(INTAKE_REV_BUTTON)) {
+			power = -127;
+		}
+	} else {
+		power = master.get_analog(INTAKE_STICK);
+	}
+	m_intake = power;
+}
+
+void power_drive() {
+	int power = master.get_analog(DRIVE_FWD);
+	int turning;
+	if (DRIVE_CONTROL_SCHEME == 0) {
+		turning = master.get_analog(DRIVE_TRN);
+	} else {
+		turning = master.get_analog(DRIVE_TRN_ALT);
+	}
+	
+	int left_power = power + turning;
+	int right_power = power - turning;
+
+	m_topleft = left_power;
+	m_bottomleft = left_power;
+	m_topright = right_power;
+	m_bottomright = right_power;
 }

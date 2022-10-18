@@ -11,7 +11,6 @@ extern std::vector<double> px_list;
 extern std::vector<double> py_list;
 
 #define UNKNOWN -1
-#define O_SENSOR_PORT
 
 // Distance to the bottom right corner of the robot in inches 
 #define SENSOR_X 0.5
