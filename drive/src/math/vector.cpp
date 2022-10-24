@@ -225,3 +225,4 @@ VectorEq Vector::to_eq() {
     double j = this->m * sin(this->direction.to_double() * DEGREES_TO_RADIANS);
     return VectorEq(i, j);
 }
+

@@ -8,7 +8,7 @@
 #define M_FLY2_PORT 15
 
 // push
-#define M_PUSH_PORT -1
+#define M_PUSH_PORT 12
 
 // drive
 #define M_TOPLEFT_PORT 12
