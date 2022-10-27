@@ -115,12 +115,12 @@ void opcontrol() {
 }
 
 void print_data() {
-	// TODO
+	// printf(m_push.get_rotation());
 }
 
 void power_flywheel() {
 	int power;
-	if (INTAKE_CONTROL_SCHEME == 0) { 
+	if (FLYWHEEL_CONTROL_SCHEME == 0) { 
 		power = master.get_digital(FLYWHEEL_BUTTON) * 127;
 	} else {
 		power = master.get_analog(FLYWHEEL_STICK);
@@ -133,6 +133,8 @@ void power_flywheel() {
 void power_push() {
 	m_push = master.get_digital(PUSH_BUTTON) * 127;
 }
+
+
 
 void power_intake() {
 	int power = 0;

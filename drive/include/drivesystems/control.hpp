@@ -23,8 +23,10 @@ extern pros::Controller master;
 
 // 0 - left stick only
 // 1 - forward on left stick, turn on right stick
-#define DRIVE_CONTROL_SCHEME 1
+#define DRIVE_CONTROL_SCHEME 0
 
 #define PUSH_BUTTON pros::E_CONTROLLER_DIGITAL_LEFT
+#define RESET_PUSH_BUTTON pros::E_CONTROLLER_DIGITAL_DOWN
+#define RESET_TIME = 1
 
 #define WIRELESS_RECIEVER_PORT 10
