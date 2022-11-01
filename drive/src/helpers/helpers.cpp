@@ -11,6 +11,18 @@ typedef struct p3 {
     float z;
 } position3D;
 
+int bool_to_multiplier(bool x) {
+    if (x)
+        return 1;
+    return -1;
+} 
+
+int capint(int val, int min, int max) {
+    if (val < min) return min;
+    if (val > max) return max;
+    return val;
+}
+
 std::vector<float> get_motor_temperatures(std::vector<pros::Motor> motors) {
     std::vector<float> temps;
 

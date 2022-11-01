@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "drive v0.11",
+    "project_name": "Westley",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -306,6 +306,10 @@
         "version": "4.8.0"
       }
     },
-    "upload_options": {}
+    "upload_options": {
+      "description": "drivin and shit",
+      "slot": 2,
+      "icon": "pizza"
+    }
   }
 }

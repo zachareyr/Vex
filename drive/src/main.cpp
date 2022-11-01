@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 void power_drive();
 void power_flywheel();
 void power_intake();
@@ -115,7 +116,8 @@ void opcontrol() {
 }
 
 void print_data() {
-	// printf(m_push.get_rotation());
+	// master.print(0, 0, m_push.get_position().to_string().c_str());
+	std::cout << "pos: " << m_push.get_position() << std::endl;
 }
 
 void power_flywheel() {
@@ -131,7 +133,16 @@ void power_flywheel() {
 }
 
 void power_push() {
-	m_push = master.get_digital(PUSH_BUTTON) * 127;
+	if (master.get_digital(REVERSE_PUSH_BTN)) {
+		if (!push_reverse_held) {
+			push_reverse_held = true;
+			push_is_forward = !push_is_forward;
+		}
+	} else {
+		push_reverse_held = false;
+	}
+
+	m_push = master.get_digital(PUSH_BUTTON) * 127 * bool_to_multiplier(push_is_forward);
 }
 
 
@@ -151,16 +162,21 @@ void power_intake() {
 }
 
 void power_drive() {
-	int power = master.get_analog(DRIVE_FWD);
-	int turning;
-	if (DRIVE_CONTROL_SCHEME == 0) {
-		turning = master.get_analog(DRIVE_TRN);
+	if (master.get_digital(REVERSE_DRIVE_BTN)) {
+		if (!drive_reverse_held) {
+			driving_mode = !driving_mode;
+			drive_reverse_held = true;
+		}
 	} else {
-		turning = master.get_analog(DRIVE_TRN_ALT);
+		drive_reverse_held = false;
 	}
-	
-	int left_power = power + turning;
-	int right_power = power - turning;
+
+	int power =   capint(master.get_analog(DRIVE_FWD) + (master.get_analog(DRIVE_FWD_FINE) * 0.25), -127, 127);
+	int turning = capint(master.get_analog(DRIVE_TRN) + (master.get_analog(DRIVE_TRN_FINE) * 0.25), -127, 127);
+
+
+	int left_power =  (power * bool_to_multiplier(driving_mode)) + turning;
+	int right_power = (power * bool_to_multiplier(driving_mode)) - turning;
 
 	m_topleft = left_power;
 	m_bottomleft = left_power;
