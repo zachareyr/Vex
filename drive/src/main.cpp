@@ -6,6 +6,9 @@ void power_flywheel();
 void power_intake();
 void power_push();
 void print_data();
+bool move_to(double target, pros::Motor m, int rpm, double maximum_distance_from_target);
+
+double push_starting_pos;
 
 void on_center_button() {
 	static bool pressed = false;
@@ -30,6 +33,7 @@ void initialize() {
 
 	inertial_sensor.reset();
 	pros::lcd::register_btn1_cb(on_center_button);
+	push_starting_pos = m_push.get_position();
 }
 
 
@@ -101,18 +105,41 @@ void opcontrol() {
 		* timestamps[i] == time that acclerations[i] and rotations[i] was recorded
 	*/
 
-
+	bool push_is_moving = false;
 	while (1) {
 		update_inertial();
 
 		power_drive();
 		power_intake();
-		power_push();
+		if (master.get_digital(PUSH_BUTTON) && !push_is_moving) {
+			push_is_moving = true;
+		}
+		if (push_is_moving) {
+			push_is_moving = !move_to(push_starting_pos, m_push, 60, 10);
+		}
+		// power_push();
 		power_flywheel();
 
 		print_data();
 		pros::delay(10);
 	}
+}
+
+// returns: true if the cycle is over, false otherwise
+// target: the position of the target
+// m: the motor to be moved
+// rpm: the maximum rpm of the movement
+// over: [bool] whether or not the initial position is greater than the target
+// returntype: [bool] true if the motion is complete, false otherwise
+bool move_to(double target, pros::Motor m, int rpm, double maximum_distance_from_target) {
+	double pos = m.get_position();
+	if (pos > target - maximum_distance_from_target || pos < target + maximum_distance_from_target) {
+		m = 0;
+		return true;
+	}
+	if (pos > target) m = rpm;
+	else m = -rpm;
+	return false;
 }
 
 void print_data() {
@@ -171,15 +198,15 @@ void power_drive() {
 		drive_reverse_held = false;
 	}
 
-	int power =   capint(master.get_analog(DRIVE_FWD) + (master.get_analog(DRIVE_FWD_FINE) * 0.25), -127, 127);
+	int power   = capint(master.get_analog(DRIVE_FWD) + (master.get_analog(DRIVE_FWD_FINE) * 0.25), -127, 127);
 	int turning = capint(master.get_analog(DRIVE_TRN) + (master.get_analog(DRIVE_TRN_FINE) * 0.25), -127, 127);
 
 
-	int left_power =  (power * bool_to_multiplier(driving_mode)) + turning;
+	int left_power  = (power * bool_to_multiplier(driving_mode)) + turning;
 	int right_power = (power * bool_to_multiplier(driving_mode)) - turning;
 
-	m_topleft = left_power;
-	m_bottomleft = left_power;
-	m_topright = right_power;
+	m_topleft     = left_power;
+	m_bottomleft  = left_power;
+	m_topright    = right_power;
 	m_bottomright = right_power;
 }

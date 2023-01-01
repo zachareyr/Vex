@@ -23,6 +23,12 @@ int capint(int val, int min, int max) {
     return val;
 }
 
+double cap(double val, double min, double max) {
+    if (val < min) return min;
+    if (val > max) return max;
+    return val;
+}
+
 std::vector<float> get_motor_temperatures(std::vector<pros::Motor> motors) {
     std::vector<float> temps;
 
